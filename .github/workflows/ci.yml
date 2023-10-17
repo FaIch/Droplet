@@ -31,5 +31,5 @@ jobs:
         run: npm ci
 
       - name: Build Expo project
-        run: npx expo build:web
+        run: npx expo build:android
 
