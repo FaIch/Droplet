@@ -1,24 +1,50 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import globalStyles from "../assets/globalStyles";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
 import AddWaterModal from "../components/AddWaterModal";
 import RemoveWaterModal from "../components/RemoveWaterModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function MainScreen() {
     const [waterIntake, setWaterIntake] = useState(0);
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
+    const updateIntakeHistory = async (newIntake) => {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+
+            const historyRaw = await AsyncStorage.getItem('waterIntakeHistory');
+            let history = historyRaw ? JSON.parse(historyRaw) : [];
+
+            const todayEntry = history.find(entry => entry.date === today);
+
+            if (todayEntry) {
+                todayEntry.intake = newIntake;
+            } else {
+                history.push({ date: today, intake: newIntake });
+            }
+
+            await AsyncStorage.setItem('waterIntakeHistory', JSON.stringify(history));
+        } catch (error) {
+            console.error('Failed to update water intake history:', error);
+        }
+    };
+
+    useEffect(() => {
+        updateIntakeHistory(waterIntake);
+    }, [waterIntake]);
+
     const addGlass = () => {
         setWaterIntake(prevIntake => prevIntake + 250);
     };
 
-    const handleAddSubmit = (amount) => {
+    const addCustom = (amount) => {
         setWaterIntake(prevIntake => prevIntake + amount);
     };
 
-    const handleRemoveSubmit = (amount) => {
+    const removeCustom = (amount) => {
         setWaterIntake(prevIntake => prevIntake - amount);
     };
 
@@ -55,7 +81,7 @@ function MainScreen() {
                     <AddWaterModal
                         visible={addModalVisible}
                         onClose={() => setAddModalVisible(false)}
-                        onSubmit={handleAddSubmit}
+                        onSubmit={addCustom}
                     />
 
                     <TouchableOpacity style={styles.button} onPress={() => setAddModalVisible(true)}>
@@ -67,7 +93,7 @@ function MainScreen() {
                 <RemoveWaterModal
                     visible={removeModalVisible}
                     onClose={() => setRemoveModalVisible(false)}
-                    onSubmit={handleRemoveSubmit}
+                    onSubmit={removeCustom}
                 />
 
                 <TouchableOpacity style={styles.button} onPress={() => setRemoveModalVisible(true)}>

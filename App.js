@@ -1,5 +1,4 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MainScreen from './screens/MainScreen';
 import StatisticsScreen from './screens/StatisticsScreen';
@@ -8,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import globalStyles from "./assets/globalStyles";
 import {View} from "react-native";
 
-const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
