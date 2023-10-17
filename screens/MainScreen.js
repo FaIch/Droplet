@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import globalStyles from "../assets/globalStyles";
-import {MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
+import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
+import AddWaterModal from "../components/AddWaterModal";
+import RemoveWaterModal from "../components/RemoveWaterModal";
 
 function MainScreen() {
     const [waterIntake, setWaterIntake] = useState(0);
+    const [addModalVisible, setAddModalVisible] = useState(false);
+    const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
     const addGlass = () => {
         setWaterIntake(prevIntake => prevIntake + 250);
     };
 
-    const addCustomAmount = () => {
-        setWaterIntake(prevIntake => prevIntake + 100);
+    const handleAddSubmit = (amount) => {
+        setWaterIntake(prevIntake => prevIntake + amount);
     };
 
-    const removeAmount = (amount) => {
+    const handleRemoveSubmit = (amount) => {
         setWaterIntake(prevIntake => prevIntake - amount);
-    }
+    };
 
     const fillPercentage = (waterIntake / 2000) * 100;
 
@@ -39,16 +43,34 @@ function MainScreen() {
                     <Text style={styles.progressPercentage}>{fillPercentage}%</Text>
                 </View>
 
-                <TouchableOpacity style={styles.button} onPress={addGlass}>
-                    <Text>Add a Glass</Text>
-                    <MaterialCommunityIcons name="cup" size={20} color="black" />
-                </TouchableOpacity>
+                <Text style={styles.addHeader}>+ Add water</Text>
 
-                <TouchableOpacity style={styles.button} onPress={addCustomAmount}>
-                    <Text>Add Custom Amount</Text>
-                </TouchableOpacity>
+                <View style={styles.addContainer}>
 
-                <TouchableOpacity style={styles.button} onPress={removeAmount}>
+                    <TouchableOpacity style={styles.button} onPress={addGlass}>
+                        <Text>Cup</Text>
+                        <MaterialCommunityIcons name="cup" size={20} color="black" />
+                    </TouchableOpacity>
+
+                    <AddWaterModal
+                        visible={addModalVisible}
+                        onClose={() => setAddModalVisible(false)}
+                        onSubmit={handleAddSubmit}
+                    />
+
+                    <TouchableOpacity style={styles.button} onPress={() => setAddModalVisible(true)}>
+                        <Text>Other amount</Text>
+                        <Ionicons name="water" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+
+                <RemoveWaterModal
+                    visible={removeModalVisible}
+                    onClose={() => setRemoveModalVisible(false)}
+                    onSubmit={handleRemoveSubmit}
+                />
+
+                <TouchableOpacity style={styles.button} onPress={() => setRemoveModalVisible(true)}>
                     <Text>Remove amount </Text>
                     <MaterialCommunityIcons name="water-remove" size={24} color="black" />
                 </TouchableOpacity>
@@ -72,12 +94,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: 100,
         height: 100,
-        top: 280
+        top: 260
     },
     header: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+    },
+    addContainer: {
+        flexDirection: 'row',
+        marginBottom: 20,
+    },
+    addHeader: {
+        marginBottom: 20
     },
     target: {
         fontSize: 18,
@@ -115,10 +144,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignContent: 'center',
-        width: 200,
+        width: 150,
         padding: 10,
         borderRadius: 5,
         marginBottom: 10,
+        marginHorizontal: 10,
     },
     progressNumber: {
         fontSize: 16,
