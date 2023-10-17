@@ -1,13 +1,71 @@
-import {View} from "react-native";
+import React, { useState, useEffect } from 'react';
+import { View, Dimensions } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CalendarPicker from "react-native-calendar-picker";
 
+const screenWidth = Dimensions.get("window").width;
 
-function StatisticsScreen () {
+function StatisticsScreen() {
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [weekData, setWeekData] = useState([]);
 
-    return(
-        <View>
+    useEffect(() => {
+        const fetchWeekData = async () => {
+            try {
+                const historyRaw = await AsyncStorage.getItem('waterIntakeHistory');
+                const parsedHistory = historyRaw ? await JSON.parse(historyRaw) : [];
 
+                const weekStartDate = new Date(selectedDate);
+                weekStartDate.setDate(weekStartDate.getDate() - weekStartDate.getDay());
+
+                const weekValues = Array.from({ length: 7 }, (_, index) => {
+                    const currentDay = new Date(weekStartDate);
+                    currentDay.setDate(currentDay.getDate() + index);
+                    const entry = parsedHistory.find(item => item.date === currentDay.toISOString().split('T')[0]);
+                    return entry ? entry.intake : 0;
+                });
+
+                setWeekData(weekValues);
+            } catch (error) {
+                console.error('Failed to fetch week data:', error);
+            }
+        };
+
+        fetchWeekData();
+    }, [selectedDate]);
+
+    return (
+        <View style={{ flex: 1 }}>
+            <CalendarPicker onDateChange={setSelectedDate} />
+
+            <LineChart
+                data={{
+                    labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    datasets: [{
+                        data: weekData
+                    }]
+                }}
+                width={screenWidth}
+                height={220}
+                yAxisLabel=""
+                chartConfig={{
+                    backgroundColor: '#e26a00',
+                    backgroundGradientFrom: '#fb8c00',
+                    backgroundGradientTo: '#ffa726',
+                    decimalPlaces: 2,
+                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                    style: {
+                        borderRadius: 16
+                    }
+                }}
+                style={{
+                    marginVertical: 8,
+                    borderRadius: 16
+                }}
+            />
         </View>
-    )
+    );
 }
 
 export default StatisticsScreen;
