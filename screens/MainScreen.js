@@ -13,7 +13,7 @@ function MainScreen() {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
-    const fillPercentage = (waterIntake / dailyGoal) * 100;
+    const fillPercentage = parseFloat((waterIntake / dailyGoal) * 100).toPrecision(3);
     const emptySpace = 300 - (3 * fillPercentage);
 
     const updateIntakeHistory = async (newIntake) => {
@@ -64,29 +64,29 @@ function MainScreen() {
     };
 
     return (
-        <View style={globalStyles.appBackground}>
-            <View style={styles.container}>
-                <Text style={styles.header}>Today</Text>
-                <Text style={styles.target}>Target: {dailyGoal}ml</Text>
+        <View style={globalStyles.appBackgroundPrimary}>
+            <View style={[styles.container]}>
+                <Text style={[styles.header, globalStyles.textPrimary]}>Today</Text>
+                <Text style={[styles.target, globalStyles.textSecondary]}>Target: {dailyGoal}ml</Text>
 
                 <View style={styles.imageContainer}>
                     <Image source={require('../assets/droplet.png')} style={styles.droplet} />
                     <Image source={require('../assets/filledDroplet.png')} style={styles.filledDroplet} />
-                    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: emptySpace, backgroundColor: 'white' }} />
+                    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: emptySpace, backgroundColor: '#0B1D3A' }} />
                 </View>
 
                 <View style={styles.progressContainer}>
-                    <Text style={styles.progressNumber}>{waterIntake}ml</Text>
-                    <Text style={styles.progressPercentage}>{fillPercentage}%</Text>
+                    <Text style={[styles.progressNumber, globalStyles.textPrimary]}>{waterIntake}ml</Text>
+                    <Text style={[styles.progressPercentage, globalStyles.textPrimary]}>{fillPercentage}%</Text>
                 </View>
 
-                <Text style={styles.addHeader}>+ Add water</Text>
+                <Text style={[styles.addHeader, globalStyles.textPrimary]}>+ Add water</Text>
 
                 <View style={styles.addContainer}>
 
-                    <TouchableOpacity style={styles.button} onPress={addGlass}>
-                        <Text>Cup</Text>
-                        <MaterialCommunityIcons name="cup" size={20} color="black" />
+                    <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={addGlass}>
+                        <Text style={globalStyles.textPrimary}>Cup</Text>
+                        <MaterialCommunityIcons name="cup" size={20} color='#E0E5E9' />
                     </TouchableOpacity>
 
                     <AddWaterModal
@@ -95,9 +95,9 @@ function MainScreen() {
                         onSubmit={addCustom}
                     />
 
-                    <TouchableOpacity style={styles.button} onPress={() => setAddModalVisible(true)}>
-                        <Text>Other amount</Text>
-                        <Ionicons name="water" size={24} color="black" />
+                    <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={() => setAddModalVisible(true)}>
+                        <Text style={globalStyles.textPrimary}>Other amount</Text>
+                        <Ionicons name="water" size={24} color='#E0E5E9' />
                     </TouchableOpacity>
                 </View>
 
@@ -107,9 +107,9 @@ function MainScreen() {
                     onSubmit={removeCustom}
                 />
 
-                <TouchableOpacity style={styles.button} onPress={() => setRemoveModalVisible(true)}>
-                    <Text>Remove amount </Text>
-                    <MaterialCommunityIcons name="water-remove" size={24} color="black" />
+                <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={() => setRemoveModalVisible(true)}>
+                    <Text style={globalStyles.textPrimary}>Remove amount </Text>
+                    <MaterialCommunityIcons name="water-remove" size={24} color='#E0E5E9' />
                 </TouchableOpacity>
             </View>
         </View>

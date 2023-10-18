@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 import {Modal, View, Text, TextInput, Button, StyleSheet, TouchableOpacity} from 'react-native';
+import globalStyles from "../assets/globalStyles";
 
 function RemoveWaterModal({ visible, onClose, onSubmit }) {
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState('0');
 
     return (
         <Modal visible={visible} animationType="slide" transparent={true}>
             <View style={styles.modalView}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.title}>Enter water amount in ml:</Text>
+                <View style={[styles.modalContent, globalStyles.appBackgroundSecondary]}>
+                    <Text style={[styles.title, globalStyles.textPrimary]}>Enter water amount in ml:</Text>
                     <TextInput
                         keyboardType="numeric"
                         value={amount}
                         onChangeText={setAmount}
                         style={styles.input}
-                        placeholder={"amount in ml"}
                     />
-                    <TouchableOpacity style={styles.button} onPress={() => { onSubmit(parseInt(amount, 10)); onClose(); }}>
+                    <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={() => { onSubmit(parseInt(amount, 10)); onClose(); }}>
                         <Text style={styles.buttonText}>Remove</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={onClose}>
+                    <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={onClose}>
                         <Text style={styles.buttonText}>Close</Text>
                     </TouchableOpacity>
                 </View>
@@ -72,7 +72,9 @@ const styles = StyleSheet.create({
         height: 30,
         textAlign: 'center',
         fontSize: 18,
-        borderRadius: 10
+        borderRadius: 10,
+        borderColor: '#E0E5E9',
+        color: '#E0E5E9',
     },
 });
 export default RemoveWaterModal;

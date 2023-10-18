@@ -12,16 +12,19 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-      <View style={globalStyles.appBackground}>
+      <View style={globalStyles.appBackgroundPrimary}>
           <NavigationContainer>
             <Tab.Navigator
                 initialRouteName="Main"
                 screenOptions={{
-                    tabBarActiveTintColor: 'blue',
-                    tabBarInactiveTintColor: 'gray',
+                    tabBarActiveTintColor: '#fb8c00',
+                    tabBarInactiveTintColor: '#B0C1C9',
                     tabBarStyle: [
                         {
-                            display: 'flex'
+                            display: 'flex',
+                            backgroundColor: '#0B1D3A',
+                            borderTopWidth: 1,
+                            borderTopColor: '#1C2F4B'
                         },
                         null
                     ]
