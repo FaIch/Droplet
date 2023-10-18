@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, } from 'react';
 import { View, Dimensions, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CalendarPicker from "react-native-calendar-picker";
 import globalStyles from "../assets/globalStyles";
+import {useFocusEffect} from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -39,10 +40,14 @@ function StatisticsScreen() {
         }
     };
 
-    useEffect(() => {
-        fetchWeekData();
-        loadPreferences();
-    }, [selectedDate]);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchWeekData();
+            loadPreferences();
+
+            return () => {};
+        }, [selectedDate])
+    );
 
     return (
         <View style={globalStyles.appBackgroundPrimary}>
