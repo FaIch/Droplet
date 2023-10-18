@@ -6,6 +6,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import globalStyles from "./assets/globalStyles";
 import {View} from "react-native";
+import SettingsScreen from "./screens/SettingsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -43,6 +44,16 @@ export default function App() {
                         <Ionicons name="stats-chart" color={color} size={size}/>
                     )
             }}
+            />
+            <Tab.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                    tabBarLabel: 'Settings',
+                    tabBarIcon: ({ color, size}) => (
+                        <Ionicons name="settings" color={color} size={size}/>
+                    )
+                }}
             />
           </Tab.Navigator>
           </NavigationContainer>

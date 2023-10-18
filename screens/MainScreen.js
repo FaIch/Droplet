@@ -7,9 +7,14 @@ import RemoveWaterModal from "../components/RemoveWaterModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function MainScreen() {
+    const [dailyGoal, setDailyGoal] = useState(2000);
+    const [cupSize, setCupSize] = useState(250);
     const [waterIntake, setWaterIntake] = useState(0);
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
+
+    const fillPercentage = (waterIntake / dailyGoal) * 100;
+    const emptySpace = 300 - (3 * fillPercentage);
 
     const updateIntakeHistory = async (newIntake) => {
         try {
@@ -32,12 +37,21 @@ function MainScreen() {
         }
     };
 
+    const loadPreferences = async () => {
+        const storedGoal = await AsyncStorage.getItem('dailyGoal');
+        const storedCupSize = await AsyncStorage.getItem('cupSize');
+
+        if (storedGoal) setDailyGoal(parseInt(storedGoal));
+        if (storedCupSize) setCupSize(parseInt(storedCupSize));
+    }
+
     useEffect(() => {
         updateIntakeHistory(waterIntake);
+        loadPreferences();
     }, [waterIntake]);
 
     const addGlass = () => {
-        setWaterIntake(prevIntake => prevIntake + 250);
+        setWaterIntake(prevIntake => prevIntake + cupSize);
     };
 
     const addCustom = (amount) => {
@@ -45,18 +59,15 @@ function MainScreen() {
     };
 
     const removeCustom = (amount) => {
-        setWaterIntake(prevIntake => prevIntake - amount);
+        if (waterIntake - amount <= 0 ) setWaterIntake(0);
+        else setWaterIntake(prevIntake => prevIntake - amount);
     };
-
-    const fillPercentage = (waterIntake / 2000) * 100;
-
-    const emptySpace = 300 - (3 * fillPercentage);
 
     return (
         <View style={globalStyles.appBackground}>
             <View style={styles.container}>
                 <Text style={styles.header}>Today</Text>
-                <Text style={styles.target}>Target: 2000ml</Text>
+                <Text style={styles.target}>Target: {dailyGoal}ml</Text>
 
                 <View style={styles.imageContainer}>
                     <Image source={require('../assets/droplet.png')} style={styles.droplet} />
