@@ -8,28 +8,84 @@ import {
     Keyboard,
     TouchableOpacity
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import globalStyles from "../assets/globalStyles";
 import Toast from 'react-native-toast-message';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 function SettingsScreen() {
+    const defaultWakeUpTime = new Date();
+    defaultWakeUpTime.setHours(8);
+    defaultWakeUpTime.setMinutes(0);
+
+    const defaultBedTime = new Date();
+    defaultBedTime.setHours(23);
+    defaultBedTime.setMinutes(0);
+
     const [dailyGoal, setDailyGoal] = useState('2000');
     const [cupSize, setCupSize] = useState('250');
+    const [wakeupTime, setWakeupTime] = useState(defaultWakeUpTime);
+    const [bedTime, setBedTime] = useState(defaultBedTime);
 
     useEffect(() => {
         loadPreferences();
     }, []);
 
+    const onWakeUpTimeChange = (event, selectedDate) => {
+        if (selectedDate) {
+            const currentTime = new Date(wakeupTime); // Start with current wakeup time
+            currentTime.setHours(selectedDate.getHours()); // Set hour from picker
+            currentTime.setMinutes(selectedDate.getMinutes()); // Set minute from picker
+            setWakeupTime(currentTime);
+        }
+    };
+
+    const onBedTimeChange = (event, selectedDate) => {
+        if (selectedDate) {
+            const currentTime = new Date(bedTime); // Start with current bed time
+            currentTime.setHours(selectedDate.getHours()); // Set hour from picker
+            currentTime.setMinutes(selectedDate.getMinutes()); // Set minute from picker
+            setBedTime(currentTime);
+        }
+    };
+
     const loadPreferences = async () => {
         const storedGoal = await AsyncStorage.getItem('dailyGoal');
         const storedCupSize = await AsyncStorage.getItem('cupSize');
+        const storedWakeUpTime = await AsyncStorage.getItem('wakeupTime');
+        const storedBedTime = await AsyncStorage.getItem('bedTime');
         if (storedGoal) setDailyGoal(storedGoal);
         if (storedCupSize) setCupSize(storedCupSize);
+        if (storedWakeUpTime) {
+            const [hour, minute] = storedWakeUpTime.split(':');
+            const date = new Date();
+            date.setHours(hour);
+            date.setMinutes(minute);
+            setWakeupTime(date);
+        }
+        if (storedBedTime) {
+            const [hour, minute] = storedBedTime.split(':');
+            const date = new Date();
+            date.setHours(hour);
+            date.setMinutes(minute);
+            setBedTime(date);
+        }
+    }
+
+    const formatTime = (hour, minute) => {
+        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
     }
 
     const savePreferences = async () => {
         await AsyncStorage.setItem('dailyGoal', dailyGoal);
         await AsyncStorage.setItem('cupSize', cupSize);
+
+        const wakeUpTimeFormatted = formatTime(wakeupTime.getHours(), wakeupTime.getMinutes());
+        const bedTimeFormatted = formatTime(bedTime.getHours(), bedTime.getMinutes());
+
+        await AsyncStorage.setItem("wakeupTime", wakeUpTimeFormatted);
+        await AsyncStorage.setItem("bedTime", bedTimeFormatted);
 
         Toast.show({
             type: 'success',
@@ -63,6 +119,30 @@ function SettingsScreen() {
                         style={[styles.input, globalStyles.textPrimary, {color: globalStyles.textSecondary.color}]}
                     />
 
+                    <View style={styles.timeContainer}>
+                        <View style={styles.timePickerContainer}>
+                            <Feather name="sun" size={24} color={globalStyles.textPrimary.color} style={styles.icon}/>
+                            <DateTimePicker
+                                value={wakeupTime}
+                                mode="time"
+                                display="default"
+                                onChange={onWakeUpTimeChange}
+                                themeVariant='dark'
+                            />
+                        </View>
+
+                        <View style={styles.timePickerContainer}>
+                            <Feather name="moon" size={24} color={globalStyles.textPrimary.color} style={styles.icon}/>
+                            <DateTimePicker
+                                value={bedTime}
+                                mode="time"
+                                display="default"
+                                onChange={onBedTimeChange}
+                                themeVariant='dark'
+                            />
+                        </View>
+                    </View>
+
                     <TouchableOpacity onPress={savePreferences} style={[globalStyles.accent, styles.button]}>
                         <Text style={styles.buttonText}>Save preferences</Text>
                     </TouchableOpacity>
@@ -81,13 +161,24 @@ const styles = StyleSheet.create({
     },
     container: {
         padding: 16,
-        height: '70%',
-        width: '80%',
+        height: '90%',
+        width: '90%',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
         borderWidth: 1,
         borderColor: globalStyles.textSecondary.color
+    },
+    timeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        width: '100%',
+        marginVertical: 10,
+    },
+    timePickerContainer: {
+        alignItems: 'center',
+
     },
     header: {
         fontSize: 24,
@@ -117,8 +208,11 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 20,
-
-    }
+    },
+    icon: {
+        marginLeft: 10,
+        marginBottom: 5
+    },
 });
 
 export default SettingsScreen;
