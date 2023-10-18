@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "537381529159",
+    "project_id": "water-tracker-bdb3f",
+    "storage_bucket": "water-tracker-bdb3f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537381529159:android:e52944f1e2374b479f7362",
+        "android_client_info": {
+          "package_name": "com.faich.WaterTracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBa1XDlWtSqtENZI5fhXTsRr3JCezSeab4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
