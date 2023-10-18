@@ -60,8 +60,8 @@ function SettingsScreen() {
         if (storedWakeUpTime) {
             const [hour, minute] = storedWakeUpTime.split(':');
             const date = new Date();
-            date.setHours(hour);
-            date.setMinutes(minute);
+            date.setHours(parseInt(hour));
+            date.setMinutes(parseInt(minute));
             setWakeupTime(date);
         }
         if (storedBedTime) {
