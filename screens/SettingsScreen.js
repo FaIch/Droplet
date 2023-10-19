@@ -9,20 +9,20 @@ import {
     TouchableOpacity
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import globalStyles from "../assets/globalStyles";
 import Toast from 'react-native-toast-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {loadPreferences, getDefaultTimes, savePreferences} from '../utility/preferencesUtil';
+import {loadPreferences, getDefaultTimes, savePreferences, formatTime} from '../utility/preferencesUtil';
 
 
 function SettingsScreen() {
     const { defaultWakeUpTime, defaultBedTime } = getDefaultTimes();
-
-    const [dailyGoal, setDailyGoal] = useState('2000');
-    const [cupSize, setCupSize] = useState('250');
+    const [dailyGoal, setDailyGoal] = useState(2000);
+    const [cupSize, setCupSize] = useState(250);
     const [wakeupTime, setWakeupTime] = useState(defaultWakeUpTime);
     const [bedTime, setBedTime] = useState(defaultBedTime);
+    const [showWakeUpPicker, setShowWakeUpPicker] = useState(false);
+    const [showBedTimePicker, setShowBedTimePicker] = useState(false);
 
     useEffect(() => {
         const fetchPreferences = async () => {
@@ -36,6 +36,7 @@ function SettingsScreen() {
     }, []);
 
     const onWakeUpTimeChange = (event, selectedDate) => {
+        setShowWakeUpPicker(false);
         if (selectedDate) {
             const currentTime = new Date(wakeupTime);
             currentTime.setHours(selectedDate.getHours());
@@ -45,6 +46,7 @@ function SettingsScreen() {
     };
 
     const onBedTimeChange = (event, selectedDate) => {
+        setShowBedTimePicker(false);
         if (selectedDate) {
             const currentTime = new Date(bedTime);
             currentTime.setHours(selectedDate.getHours());
@@ -79,7 +81,7 @@ function SettingsScreen() {
 
                     <Text style={[styles.inputPreface, globalStyles.textPrimary]}>Daily Goal (ml):</Text>
                     <TextInput
-                        value={dailyGoal}
+                        value={dailyGoal.toString()}
                         onChangeText={setDailyGoal}
                         keyboardType="numeric"
                         style={[styles.input, globalStyles.textPrimary, {color: globalStyles.textSecondary.color}]}
@@ -87,7 +89,7 @@ function SettingsScreen() {
 
                     <Text style={[styles.inputPreface, globalStyles.textPrimary]}>Cup Size (ml):</Text>
                     <TextInput
-                        value={cupSize}
+                        value={cupSize.toString()}
                         onChangeText={setCupSize}
                         keyboardType="numeric"
                         style={[styles.input, globalStyles.textPrimary, {color: globalStyles.textSecondary.color}]}
@@ -96,24 +98,34 @@ function SettingsScreen() {
                     <View style={styles.timeContainer}>
                         <View style={styles.timePickerContainer}>
                             <Feather name="sun" size={24} color={globalStyles.textPrimary.color} style={styles.icon}/>
-                            <DateTimePicker
-                                value={wakeupTime}
-                                mode="time"
-                                display="default"
-                                onChange={onWakeUpTimeChange}
-                                themeVariant='dark'
-                            />
+                            <TouchableOpacity style={styles.timeButton} onPress={() => setShowWakeUpPicker(true)}>
+                                <Text style={styles.timeText}>{formatTime(wakeupTime.getHours(), wakeupTime.getMinutes())}</Text>
+                            </TouchableOpacity>
+                            {showWakeUpPicker && (
+                                <DateTimePicker
+                                    value={wakeupTime}
+                                    mode="time"
+                                    display="default"
+                                    onChange={onWakeUpTimeChange}
+                                    themeVariant='dark'
+                                />
+                            )}
                         </View>
 
                         <View style={styles.timePickerContainer}>
                             <Feather name="moon" size={24} color={globalStyles.textPrimary.color} style={styles.icon}/>
-                            <DateTimePicker
-                                value={bedTime}
-                                mode="time"
-                                display="default"
-                                onChange={onBedTimeChange}
-                                themeVariant='dark'
-                            />
+                            <TouchableOpacity style={styles.timeButton} onPress={() => setShowBedTimePicker(true)}>
+                                <Text style={styles.timeText}>{formatTime(bedTime.getHours(), bedTime.getMinutes())}</Text>
+                            </TouchableOpacity>
+                            {showBedTimePicker && (
+                                <DateTimePicker
+                                    value={bedTime}
+                                    mode="time"
+                                    display="default"
+                                    onChange={onBedTimeChange}
+                                    themeVariant='dark'
+                                />
+                            )}
                         </View>
                     </View>
 
@@ -186,6 +198,17 @@ const styles = StyleSheet.create({
     icon: {
         marginLeft: 10,
         marginBottom: 5
+    },
+    timeText: {
+        color: globalStyles.textPrimary.color,
+        fontSize: 20,
+        padding: 3
+    },
+    timeButton: {
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: globalStyles.textSecondary.color,
+        marginLeft: 5
     },
 });
 

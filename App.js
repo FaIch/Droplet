@@ -10,6 +10,8 @@ import SettingsScreen from "./screens/SettingsScreen";
 import {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loadPreferences, getDefaultTimes } from './utility/preferencesUtil';
+import {scheduleWakeUpNotification, isNotificationScheduled} from "./utility/notificationsUtil";
+import * as Notifications from "expo-notifications";
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +32,30 @@ export default function App() {
             if (preferences.bedTime) setBedTime(preferences.bedTime);
         };
         fetchPreferences();
+    }, []);
+
+    useEffect(() => {
+        const requestPermission = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Notification permissions are not granted!');
+                return;
+            }
+
+            const notificationScheduled = await isNotificationScheduled();
+
+            if (!notificationScheduled){
+                const [hours, minutes] = wakeupTime.split(":").map(Number);
+
+                const wakeupTimeDate = new Date();
+                wakeupTimeDate.setHours(hours);
+                wakeupTimeDate.setMinutes(minutes);
+
+                await scheduleWakeUpNotification(wakeupTimeDate);
+            }
+        };
+
+        requestPermission();
     }, []);
 
   return (

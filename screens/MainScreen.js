@@ -6,6 +6,7 @@ import AddWaterModal from "../components/AddWaterModal";
 import RemoveWaterModal from "../components/RemoveWaterModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loadPreferences } from '../utility/preferencesUtil';
+import {useFocusEffect} from "@react-navigation/native";
 
 function MainScreen() {
     const [dailyGoal, setDailyGoal] = useState(2000);
@@ -17,10 +18,14 @@ function MainScreen() {
     const fillPercentage = parseFloat((waterIntake / dailyGoal) * 100).toPrecision(3);
     const emptySpace = 300 - (3 * fillPercentage);
 
-    useEffect(() => {
-        updateIntakeHistory(waterIntake);
-        fetchPreferences();
-    }, [waterIntake]);
+    useFocusEffect(
+        React.useCallback(() => {
+            updateIntakeHistory(waterIntake);
+            fetchPreferences();
+
+            return () => {};
+        }, [waterIntake])
+    );
 
     const updateIntakeHistory = async (newIntake) => {
         try {
@@ -45,8 +50,8 @@ function MainScreen() {
 
     const fetchPreferences = async () => {
         const preferences = await loadPreferences();
-        if (preferences.dailyGoal) setDailyGoal(preferences.dailyGoal);
-        if (preferences.cupSize) setCupSize(preferences.cupSize);
+        if (preferences.dailyGoal) setDailyGoal(parseInt(preferences.dailyGoal));
+        if (preferences.cupSize) setCupSize(parseInt(preferences.cupSize));
     };
 
     const addGlass = () => {
