@@ -37,7 +37,7 @@ Droplet is still in development, but will soon be published on Google Play Store
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/Droplet.git
+   git clone https://github.com/Faich/Droplet.git
    ```
 
 2. **Navigate into the directory**:
