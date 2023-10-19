@@ -13,15 +13,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import globalStyles from "../assets/globalStyles";
 import Toast from 'react-native-toast-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { loadPreferences, getDefaultTimes } from '../utility/preferencesUtil';
+
 
 function SettingsScreen() {
-    const defaultWakeUpTime = new Date();
-    defaultWakeUpTime.setHours(8);
-    defaultWakeUpTime.setMinutes(0);
-
-    const defaultBedTime = new Date();
-    defaultBedTime.setHours(23);
-    defaultBedTime.setMinutes(0);
+    const { defaultWakeUpTime, defaultBedTime } = getDefaultTimes();
 
     const [dailyGoal, setDailyGoal] = useState('2000');
     const [cupSize, setCupSize] = useState('250');
@@ -29,49 +25,33 @@ function SettingsScreen() {
     const [bedTime, setBedTime] = useState(defaultBedTime);
 
     useEffect(() => {
-        loadPreferences();
+        const fetchPreferences = async () => {
+            const preferences = await loadPreferences();
+            if (preferences.dailyGoal) setDailyGoal(preferences.dailyGoal);
+            if (preferences.cupSize) setCupSize(preferences.cupSize);
+            if (preferences.wakeupTime) setWakeupTime(preferences.wakeupTime);
+            if (preferences.bedTime) setBedTime(preferences.bedTime);
+        };
+        fetchPreferences();
     }, []);
 
     const onWakeUpTimeChange = (event, selectedDate) => {
         if (selectedDate) {
-            const currentTime = new Date(wakeupTime); // Start with current wakeup time
-            currentTime.setHours(selectedDate.getHours()); // Set hour from picker
-            currentTime.setMinutes(selectedDate.getMinutes()); // Set minute from picker
+            const currentTime = new Date(wakeupTime);
+            currentTime.setHours(selectedDate.getHours());
+            currentTime.setMinutes(selectedDate.getMinutes());
             setWakeupTime(currentTime);
         }
     };
 
     const onBedTimeChange = (event, selectedDate) => {
         if (selectedDate) {
-            const currentTime = new Date(bedTime); // Start with current bed time
-            currentTime.setHours(selectedDate.getHours()); // Set hour from picker
-            currentTime.setMinutes(selectedDate.getMinutes()); // Set minute from picker
+            const currentTime = new Date(bedTime);
+            currentTime.setHours(selectedDate.getHours());
+            currentTime.setMinutes(selectedDate.getMinutes());
             setBedTime(currentTime);
         }
     };
-
-    const loadPreferences = async () => {
-        const storedGoal = await AsyncStorage.getItem('dailyGoal');
-        const storedCupSize = await AsyncStorage.getItem('cupSize');
-        const storedWakeUpTime = await AsyncStorage.getItem('wakeupTime');
-        const storedBedTime = await AsyncStorage.getItem('bedTime');
-        if (storedGoal) setDailyGoal(storedGoal);
-        if (storedCupSize) setCupSize(storedCupSize);
-        if (storedWakeUpTime) {
-            const [hour, minute] = storedWakeUpTime.split(':');
-            const date = new Date();
-            date.setHours(parseInt(hour));
-            date.setMinutes(parseInt(minute));
-            setWakeupTime(date);
-        }
-        if (storedBedTime) {
-            const [hour, minute] = storedBedTime.split(':');
-            const date = new Date();
-            date.setHours(hour);
-            date.setMinutes(minute);
-            setBedTime(date);
-        }
-    }
 
     const formatTime = (hour, minute) => {
         return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
