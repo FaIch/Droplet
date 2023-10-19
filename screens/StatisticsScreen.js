@@ -10,14 +10,8 @@ const screenWidth = Dimensions.get("window").width;
 
 function StatisticsScreen() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    const [weekData, setWeekData] = useState([]);
-    const [dailyGoal, setDailyGoal] = useState(2000)
+    const [weekData, setWeekData] = useState([0, 0, 0, 0, 0, 0, 0]);
 
-    const loadPreferences = async () => {
-        const storedGoal = await AsyncStorage.getItem('dailyGoal');
-
-        if (storedGoal) setDailyGoal(parseInt(storedGoal));
-    }
 
     const fetchWeekData = async () => {
         try {
@@ -43,8 +37,6 @@ function StatisticsScreen() {
     useFocusEffect(
         React.useCallback(() => {
             fetchWeekData();
-            loadPreferences();
-
             return () => {};
         }, [selectedDate])
     );
