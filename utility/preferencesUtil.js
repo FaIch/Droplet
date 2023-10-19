@@ -41,3 +41,20 @@ export const loadPreferences = async () => {
 
     return preferences;
 };
+
+export const formatTime = (hour, minute) => {
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+}
+
+export const savePreferences = async (preferences) => {
+    const { dailyGoal, cupSize, wakeupTime, bedTime } = preferences;
+
+    await AsyncStorage.setItem('dailyGoal', dailyGoal);
+    await AsyncStorage.setItem('cupSize', cupSize);
+
+    const wakeUpTimeFormatted = formatTime(wakeupTime.getHours(), wakeupTime.getMinutes());
+    const bedTimeFormatted = formatTime(bedTime.getHours(), bedTime.getMinutes());
+
+    await AsyncStorage.setItem("wakeupTime", wakeUpTimeFormatted);
+    await AsyncStorage.setItem("bedTime", bedTimeFormatted);
+}

@@ -5,6 +5,7 @@ import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
 import AddWaterModal from "../components/AddWaterModal";
 import RemoveWaterModal from "../components/RemoveWaterModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { loadPreferences } from '../utility/preferencesUtil';
 
 function MainScreen() {
     const [dailyGoal, setDailyGoal] = useState(2000);
@@ -15,6 +16,11 @@ function MainScreen() {
 
     const fillPercentage = parseFloat((waterIntake / dailyGoal) * 100).toPrecision(3);
     const emptySpace = 300 - (3 * fillPercentage);
+
+    useEffect(() => {
+        updateIntakeHistory(waterIntake);
+        fetchPreferences();
+    }, [waterIntake]);
 
     const updateIntakeHistory = async (newIntake) => {
         try {
@@ -37,18 +43,11 @@ function MainScreen() {
         }
     };
 
-    const loadPreferences = async () => {
-        const storedGoal = await AsyncStorage.getItem('dailyGoal');
-        const storedCupSize = await AsyncStorage.getItem('cupSize');
-
-        if (storedGoal) setDailyGoal(parseInt(storedGoal));
-        if (storedCupSize) setCupSize(parseInt(storedCupSize));
-    }
-
-    useEffect(() => {
-        updateIntakeHistory(waterIntake);
-        loadPreferences();
-    }, [waterIntake]);
+    const fetchPreferences = async () => {
+        const preferences = await loadPreferences();
+        if (preferences.dailyGoal) setDailyGoal(preferences.dailyGoal);
+        if (preferences.cupSize) setCupSize(preferences.cupSize);
+    };
 
     const addGlass = () => {
         setWaterIntake(prevIntake => prevIntake + cupSize);

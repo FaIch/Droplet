@@ -13,7 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import globalStyles from "../assets/globalStyles";
 import Toast from 'react-native-toast-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { loadPreferences, getDefaultTimes } from '../utility/preferencesUtil';
+import {loadPreferences, getDefaultTimes, savePreferences} from '../utility/preferencesUtil';
 
 
 function SettingsScreen() {
@@ -53,19 +53,13 @@ function SettingsScreen() {
         }
     };
 
-    const formatTime = (hour, minute) => {
-        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-    }
-
-    const savePreferences = async () => {
-        await AsyncStorage.setItem('dailyGoal', dailyGoal);
-        await AsyncStorage.setItem('cupSize', cupSize);
-
-        const wakeUpTimeFormatted = formatTime(wakeupTime.getHours(), wakeupTime.getMinutes());
-        const bedTimeFormatted = formatTime(bedTime.getHours(), bedTime.getMinutes());
-
-        await AsyncStorage.setItem("wakeupTime", wakeUpTimeFormatted);
-        await AsyncStorage.setItem("bedTime", bedTimeFormatted);
+    const saveUserPreferences = async () => {
+        await savePreferences({
+            dailyGoal,
+            cupSize,
+            wakeupTime,
+            bedTime
+        });
 
         Toast.show({
             type: 'success',
@@ -123,7 +117,7 @@ function SettingsScreen() {
                         </View>
                     </View>
 
-                    <TouchableOpacity onPress={savePreferences} style={[globalStyles.accent, styles.button]}>
+                    <TouchableOpacity onPress={saveUserPreferences} style={[globalStyles.accent, styles.button]}>
                         <Text style={styles.buttonText}>Save preferences</Text>
                     </TouchableOpacity>
                 </View>
