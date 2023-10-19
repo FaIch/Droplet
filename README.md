@@ -23,7 +23,7 @@ Droplet is still in development, but will soon be published on Google Play Store
 
 | Daily Tracking | Weekly Insights |             Customization             |
 |:---:|:---:|:-------------------------------------:|
-| ![Daily Tracking](C:\Users\Joakim\WebStormProjects\Water-Tracker\assets\screenshots\daily_tracking.png) | ![Weekly Insights](C:\Users\Joakim\WebStormProjects\Water-Tracker\assets\screenshots\weekly_insights.png) | ![Reminders](C:\Users\Joakim\WebStormProjects\Water-Tracker\assets\screenshots\customization.png) |
+| ![Daily Tracking](./assets/screenshots/daily_tracking.png) | ![Weekly Insights](./assets/screenshots/weekly_insights.png) | ![Reminders](./assets/screenshots/customization.png) |
 
 
 ## Technologies Used 💻
