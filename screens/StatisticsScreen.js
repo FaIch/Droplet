@@ -8,11 +8,17 @@ import {useFocusEffect} from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 
+/**
+ * Screen to show the statistics of the user, is composed of a calendar and a line chart that shows weekly intervals
+ */
 function StatisticsScreen() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [weekData, setWeekData] = useState([0, 0, 0, 0, 0, 0, 0]);
 
 
+    /**
+     * Function to display the data of the week the user has chosen in the calendar
+     */
     const fetchWeekData = async () => {
         try {
             const historyRaw = await AsyncStorage.getItem('waterIntakeHistory');

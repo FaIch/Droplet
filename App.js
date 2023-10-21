@@ -8,7 +8,6 @@ import globalStyles from "./assets/globalStyles";
 import {View} from "react-native";
 import SettingsScreen from "./screens/SettingsScreen";
 import {useEffect, useState} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loadPreferences, getDefaultTimes } from './utility/preferencesUtil';
 import {scheduleWakeUpNotification, isNotificationScheduled} from "./utility/notificationsUtil";
 import * as Notifications from "expo-notifications";
@@ -18,18 +17,12 @@ const Tab = createBottomTabNavigator();
 export default function App() {
     const { defaultWakeUpTime, defaultBedTime } = getDefaultTimes();
 
-    const [dailyGoal, setDailyGoal] = useState('2000');
-    const [cupSize, setCupSize] = useState('250');
     const [wakeupTime, setWakeupTime] = useState(defaultWakeUpTime);
-    const [bedTime, setBedTime] = useState(defaultBedTime);
 
     useEffect(() => {
         const fetchPreferences = async () => {
             const preferences = await loadPreferences();
-            if (preferences.dailyGoal) setDailyGoal(preferences.dailyGoal);
-            if (preferences.cupSize) setCupSize(preferences.cupSize);
             if (preferences.wakeupTime) setWakeupTime(preferences.wakeupTime);
-            if (preferences.bedTime) setBedTime(preferences.bedTime);
         };
         fetchPreferences();
     }, []);

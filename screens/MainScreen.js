@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import globalStyles from "../assets/globalStyles";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
@@ -8,6 +8,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loadPreferences } from '../utility/preferencesUtil';
 import {useFocusEffect} from "@react-navigation/native";
 
+
+/**
+ * Main screen of the application, here the user tracks their water intake for the day
+ */
 function MainScreen() {
     const [dailyGoal, setDailyGoal] = useState(2000);
     const [cupSize, setCupSize] = useState(250);
@@ -15,18 +19,24 @@ function MainScreen() {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
+    // The progress of the user for the day, their intake divided by their goal
     const fillPercentage = parseFloat((waterIntake / dailyGoal) * 100).toPrecision(3);
-    const emptySpace = 300 - (3 * fillPercentage);
+    const emptySpace = 300 - (3 * fillPercentage); // A value to determine how much of the filled droplet image should be seen
 
     useFocusEffect(
         React.useCallback(() => {
-            updateIntakeHistory(waterIntake);
+            updateIntakeHistory(waterIntake); //watches for changes in waterIntake and updates state accordingly
             fetchPreferences();
 
             return () => {};
         }, [waterIntake])
     );
 
+    /**
+     * Function to update the water intake.
+     * Either creates a new entry for the given day or updates the amount.
+     * @param newIntake the new amount of water intake, updated from the useFocusEffect function
+     */
     const updateIntakeHistory = async (newIntake) => {
         try {
             const today = new Date().toISOString().split('T')[0];
@@ -49,9 +59,13 @@ function MainScreen() {
     };
 
     const fetchPreferences = async () => {
-        const preferences = await loadPreferences();
-        if (preferences.dailyGoal) setDailyGoal(parseInt(preferences.dailyGoal));
-        if (preferences.cupSize) setCupSize(parseInt(preferences.cupSize));
+        try {
+            const preferences = await loadPreferences();
+            if (preferences.dailyGoal) setDailyGoal(parseInt(preferences.dailyGoal));
+            if (preferences.cupSize) setCupSize(parseInt(preferences.cupSize));
+        } catch (error) {
+            console.error('Failed to fetch preferences:', error)
+        }
     };
 
     const addGlass = () => {

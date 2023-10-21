@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {cancelNotification, scheduleWakeUpNotification} from "./notificationsUtil";
 
+/**
+ * Util file for various preference operations
+ */
 export const getDefaultTimes = () => {
     const defaultWakeUpTime = new Date();
     defaultWakeUpTime.setHours(8);
@@ -58,4 +61,8 @@ export const savePreferences = async (preferences) => {
 
     await AsyncStorage.setItem("wakeupTime", wakeUpTimeFormatted);
     await AsyncStorage.setItem("bedTime", bedTimeFormatted);
+
+    const identifier = await AsyncStorage.getItem("wakeupIdentifier");
+    await cancelNotification(identifier);
+    await scheduleWakeUpNotification(wakeupTime);
 }

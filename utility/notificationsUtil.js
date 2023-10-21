@@ -1,6 +1,10 @@
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/**
+ * Util file for various notification operations
+ */
+
 const defaultContent = {
     title: 'Time to Hydrate!',
     body: "Don't forget to drink a glass of water to start your day right.",

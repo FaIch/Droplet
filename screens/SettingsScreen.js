@@ -15,6 +15,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {loadPreferences, getDefaultTimes, savePreferences, formatTime} from '../utility/preferencesUtil';
 
 
+/**
+ * Screen for the user to edit some preferences to be used in the application
+ */
 function SettingsScreen() {
     const { defaultWakeUpTime, defaultBedTime } = getDefaultTimes();
     const [dailyGoal, setDailyGoal] = useState(2000);
@@ -26,11 +29,15 @@ function SettingsScreen() {
 
     useEffect(() => {
         const fetchPreferences = async () => {
-            const preferences = await loadPreferences();
-            if (preferences.dailyGoal) setDailyGoal(preferences.dailyGoal);
-            if (preferences.cupSize) setCupSize(preferences.cupSize);
-            if (preferences.wakeupTime) setWakeupTime(preferences.wakeupTime);
-            if (preferences.bedTime) setBedTime(preferences.bedTime);
+            try {
+                const preferences = await loadPreferences();
+                if (preferences.dailyGoal) setDailyGoal(preferences.dailyGoal);
+                if (preferences.cupSize) setCupSize(preferences.cupSize);
+                if (preferences.wakeupTime) setWakeupTime(preferences.wakeupTime);
+                if (preferences.bedTime) setBedTime(preferences.bedTime);
+            } catch (error) {
+                console.error("Failed to fetch preferences:", error);
+            }
         };
         fetchPreferences();
     }, []);
@@ -56,12 +63,16 @@ function SettingsScreen() {
     };
 
     const saveUserPreferences = async () => {
-        await savePreferences({
-            dailyGoal,
-            cupSize,
-            wakeupTime,
-            bedTime
-        });
+        try {
+            await savePreferences({
+                dailyGoal,
+                cupSize,
+                wakeupTime,
+                bedTime
+            });
+        } catch (error) {
+            console.error("Failed to save preferences:", error);
+        }
 
         Toast.show({
             type: 'success',
