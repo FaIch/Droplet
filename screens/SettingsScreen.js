@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 20,
+        color: globalStyles.textPrimary.color,
     },
     icon: {
         marginLeft: 10,

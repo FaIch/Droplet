@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     },
     drinkText: {
         color: globalStyles.textPrimary.color,
+        fontSize: 20,
     },
     closeButton: {
         backgroundColor: globalStyles.accent.backgroundColor,
@@ -97,6 +98,7 @@ const styles = StyleSheet.create({
     textStyle: {
         color: 'white',
         textAlign: 'center',
+        fontSize: 20,
     },
 });
 
