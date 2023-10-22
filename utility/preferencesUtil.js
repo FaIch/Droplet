@@ -20,12 +20,10 @@ export const loadPreferences = async () => {
     const preferences = {};
 
     const storedGoal = await AsyncStorage.getItem('dailyGoal');
-    const storedCupSize = await AsyncStorage.getItem('cupSize');
     const storedWakeUpTime = await AsyncStorage.getItem('wakeupTime');
     const storedBedTime = await AsyncStorage.getItem('bedTime');
 
     if (storedGoal) preferences.dailyGoal = storedGoal;
-    if (storedCupSize) preferences.cupSize = storedCupSize;
 
     if (storedWakeUpTime) {
         const [hour, minute] = storedWakeUpTime.split(':');
@@ -51,10 +49,9 @@ export const formatTime = (hour, minute) => {
 }
 
 export const savePreferences = async (preferences) => {
-    const { dailyGoal, cupSize, wakeupTime, bedTime } = preferences;
+    const { dailyGoal, wakeupTime, bedTime } = preferences;
 
     await AsyncStorage.setItem('dailyGoal', dailyGoal);
-    await AsyncStorage.setItem('cupSize', cupSize);
 
     const wakeUpTimeFormatted = formatTime(wakeupTime.getHours(), wakeupTime.getMinutes());
     const bedTimeFormatted = formatTime(bedTime.getHours(), bedTime.getMinutes());

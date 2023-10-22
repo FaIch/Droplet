@@ -21,7 +21,6 @@ import {loadPreferences, getDefaultTimes, savePreferences, formatTime} from '../
 function SettingsScreen() {
     const { defaultWakeUpTime, defaultBedTime } = getDefaultTimes();
     const [dailyGoal, setDailyGoal] = useState(2000);
-    const [cupSize, setCupSize] = useState(250);
     const [wakeupTime, setWakeupTime] = useState(defaultWakeUpTime);
     const [bedTime, setBedTime] = useState(defaultBedTime);
     const [showWakeUpPicker, setShowWakeUpPicker] = useState(false);
@@ -32,7 +31,6 @@ function SettingsScreen() {
             try {
                 const preferences = await loadPreferences();
                 if (preferences.dailyGoal) setDailyGoal(preferences.dailyGoal);
-                if (preferences.cupSize) setCupSize(preferences.cupSize);
                 if (preferences.wakeupTime) setWakeupTime(preferences.wakeupTime);
                 if (preferences.bedTime) setBedTime(preferences.bedTime);
             } catch (error) {
@@ -66,7 +64,6 @@ function SettingsScreen() {
         try {
             await savePreferences({
                 dailyGoal,
-                cupSize,
                 wakeupTime,
                 bedTime
             });
@@ -94,14 +91,6 @@ function SettingsScreen() {
                     <TextInput
                         value={dailyGoal.toString()}
                         onChangeText={setDailyGoal}
-                        keyboardType="numeric"
-                        style={[styles.input, globalStyles.textPrimary, {color: globalStyles.textSecondary.color}]}
-                    />
-
-                    <Text style={[styles.inputPreface, globalStyles.textPrimary]}>Cup Size (ml):</Text>
-                    <TextInput
-                        value={cupSize.toString()}
-                        onChangeText={setCupSize}
                         keyboardType="numeric"
                         style={[styles.input, globalStyles.textPrimary, {color: globalStyles.textSecondary.color}]}
                     />
