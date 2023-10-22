@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import globalStyles from "../assets/globalStyles";
-import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
-import AddWaterModal from "../components/AddWaterModal";
-import RemoveWaterModal from "../components/RemoveWaterModal";
+import DrinkModal from "../components/DrinkModal";
+import AmountModal from "../components/AmountModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loadPreferences } from '../utility/preferencesUtil';
 import {useFocusEffect} from "@react-navigation/native";
@@ -14,10 +13,10 @@ import {useFocusEffect} from "@react-navigation/native";
  */
 function MainScreen() {
     const [dailyGoal, setDailyGoal] = useState(2000);
-    const [cupSize, setCupSize] = useState(250);
     const [waterIntake, setWaterIntake] = useState(0);
-    const [addModalVisible, setAddModalVisible] = useState(false);
-    const [removeModalVisible, setRemoveModalVisible] = useState(false);
+    const [chooseModalVisible, setChooseModalVisible] =  useState(false);
+    const [amountModalVisible, setAmountModalVisible] = useState(false);
+    const [currentDrink, setCurrentDrink] = useState(null);
 
     // The progress of the user for the day, their intake divided by their goal
     const fillPercentage = parseFloat((waterIntake / dailyGoal) * 100).toPrecision(3);
@@ -62,23 +61,23 @@ function MainScreen() {
         try {
             const preferences = await loadPreferences();
             if (preferences.dailyGoal) setDailyGoal(parseInt(preferences.dailyGoal));
-            if (preferences.cupSize) setCupSize(parseInt(preferences.cupSize));
         } catch (error) {
             console.error('Failed to fetch preferences:', error)
         }
     };
 
-    const addGlass = () => {
-        setWaterIntake(prevIntake => prevIntake + cupSize);
+    const handleDrinkSelect = (selectedDrink) => {
+        setChooseModalVisible(false);
+        setAmountModalVisible(true);
+        setCurrentDrink(selectedDrink);
     };
 
-    const addCustom = (amount) => {
-        setWaterIntake(prevIntake => prevIntake + amount);
-    };
-
-    const removeCustom = (amount) => {
-        if (waterIntake - amount <= 0 ) setWaterIntake(0);
-        else setWaterIntake(prevIntake => prevIntake - amount);
+    const handleAmountSubmit = (amount) => {
+        setAmountModalVisible(false);
+        if (currentDrink) {
+            const intake = amount * currentDrink.percentage;
+            setWaterIntake(prevIntake => prevIntake + intake);
+        }
     };
 
     return (
@@ -101,34 +100,24 @@ function MainScreen() {
                 <Text style={[styles.addHeader, globalStyles.textPrimary]}>+ Add water</Text>
 
                 <View style={styles.addContainer}>
-
-                    <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={addGlass}>
-                        <Text style={globalStyles.textPrimary}>Cup</Text>
-                        <MaterialCommunityIcons name="cup" size={20} color='#E0E5E9' />
+                    <TouchableOpacity
+                        style={styles.plussButton}
+                        onPress={() => setChooseModalVisible(true)}
+                    >
+                        <Text style={styles.plussButtonText}>+</Text>
                     </TouchableOpacity>
-
-                    <AddWaterModal
-                        visible={addModalVisible}
-                        onClose={() => setAddModalVisible(false)}
-                        onSubmit={addCustom}
+                    <DrinkModal
+                        visible={chooseModalVisible}
+                        onClose={() => setChooseModalVisible(false)}
+                        onSelectDrink={handleDrinkSelect}
                     />
 
-                    <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={() => setAddModalVisible(true)}>
-                        <Text style={globalStyles.textPrimary}>Other amount</Text>
-                        <Ionicons name="water" size={24} color='#E0E5E9' />
-                    </TouchableOpacity>
+                    <AmountModal
+                        visible={amountModalVisible}
+                        onClose={() => setAmountModalVisible(false)}
+                        onSubmit={handleAmountSubmit}
+                    />
                 </View>
-
-                <RemoveWaterModal
-                    visible={removeModalVisible}
-                    onClose={() => setRemoveModalVisible(false)}
-                    onSubmit={removeCustom}
-                />
-
-                <TouchableOpacity style={[styles.button, globalStyles.accent]} onPress={() => setRemoveModalVisible(true)}>
-                    <Text style={globalStyles.textPrimary}>Remove amount </Text>
-                    <MaterialCommunityIcons name="water-remove" size={24} color='#E0E5E9' />
-                </TouchableOpacity>
             </View>
         </View>
     );
@@ -166,6 +155,19 @@ const styles = StyleSheet.create({
     target: {
         fontSize: 18,
         marginBottom: 30,
+    },
+    plussButton: {
+        marginTop: 10,
+        width: '30%',
+        height: '100%',
+        borderWidth: 1,
+        alignItems: 'center',
+        borderRadius: 50,
+        backgroundColor: globalStyles.accent.backgroundColor
+    },
+    plussButtonText: {
+        color: globalStyles.textPrimary.color,
+        fontSize: 50
     },
     imageContainer: {
         width: 250,
