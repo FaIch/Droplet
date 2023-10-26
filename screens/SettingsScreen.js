@@ -60,6 +60,10 @@ function SettingsScreen() {
         }
     };
 
+    const onDailyGoalChange = (amount) => {
+        setDailyGoal(amount)
+    }
+
     const saveUserPreferences = async () => {
         try {
             await savePreferences({
@@ -90,7 +94,7 @@ function SettingsScreen() {
                     <Text style={[styles.inputPreface, globalStyles.textPrimary]}>Daily Goal (ml):</Text>
                     <TextInput
                         value={dailyGoal.toString()}
-                        onChangeText={setDailyGoal}
+                        onChangeText={onDailyGoalChange}
                         keyboardType="numeric"
                         style={[styles.input, globalStyles.textPrimary, {color: globalStyles.textSecondary.color}]}
                     />
