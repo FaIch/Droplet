@@ -2,7 +2,7 @@
   "expo": {
     "name": "Water-Tracker",
     "slug": "Water-Tracker",
-    "version": "0.0.2",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
